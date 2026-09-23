@@ -1,26 +1,471 @@
 @import "tailwindcss";
 
+/* ── NEON WALLS · design tokens ─────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #07050c;
+  --night: #100a1a;
+  --slate: #1a1327;
+  --smoke: #2a2038;
+  --paper: #f6f1e8;
+  --ash: #a498b8;
+
+  --acid: #c8ff32;
+  --magenta: #ff2f86;
+  --cyan: #22e0ff;
+  --ember: #ff8b3d;
+  --gold: #ffc542;
+
+  --hud-edge: rgba(200, 255, 50, 0.55);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink: var(--ink);
+  --color-night: var(--night);
+  --color-slate: var(--slate);
+  --color-smoke: var(--smoke);
+  --color-paper: var(--paper);
+  --color-ash: var(--ash);
+  --color-acid: var(--acid);
+  --color-magenta: var(--magenta);
+  --color-cyan: var(--cyan);
+  --color-ember: var(--ember);
+  --color-gold: var(--gold);
+  --font-display: "Anton", "Arial Narrow", sans-serif;
+  --font-marker: "Permanent Marker", cursive;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overscroll-behavior: none;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── shared type treatments ─────────────────────────────────────────────── */
+.display {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.stencil {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.mono {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 0.08em;
+}
+
+/* ── HUD chrome ─────────────────────────────────────────────────────────── */
+.hud-panel {
+  background: linear-gradient(
+    145deg,
+    rgba(16, 10, 26, 0.82),
+    rgba(10, 7, 16, 0.72)
+  );
+  border: 1px solid rgba(246, 241, 232, 0.1);
+  backdrop-filter: blur(12px) saturate(1.2);
+  box-shadow:
+    0 18px 44px -22px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.corner-cut {
+  clip-path: polygon(
+    14px 0,
+    100% 0,
+    100% calc(100% - 14px),
+    calc(100% - 14px) 100%,
+    0 100%,
+    0 14px
+  );
+}
+
+.neon-text {
+  text-shadow:
+    0 0 6px rgba(200, 255, 50, 0.55),
+    0 0 22px rgba(200, 255, 50, 0.25);
+}
+
+.magenta-glow {
+  text-shadow:
+    0 0 8px rgba(255, 47, 134, 0.6),
+    0 0 26px rgba(255, 47, 134, 0.3);
+}
+
+/* ── keyframes ──────────────────────────────────────────────────────────── */
+@keyframes nw-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes nw-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.02) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+/* a rubber stamp coming down: too big, then slammed flat */
+@keyframes nw-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(2.4) rotate(8deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(0.94) rotate(-1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+@keyframes nw-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+/* "start here": the outline breathes, the card and what is on it do not */
+@keyframes nw-callout {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px var(--acid),
+      0 0 30px rgba(200, 255, 50, 0.5),
+      0 22px 42px -28px rgba(0, 0, 0, 1);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px rgba(200, 255, 50, 0.55),
+      0 0 8px rgba(200, 255, 50, 0.12),
+      0 22px 42px -28px rgba(0, 0, 0, 1);
+  }
+}
+/* the incoming call before the briefing: rings travelling out from the phone.
+   Transform and opacity only, so they keep moving on the compositor while the
+   city is being built on the main thread underneath. */
+@keyframes nw-ring {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+@keyframes nw-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  42% {
+    opacity: 1;
+  }
+  44% {
+    opacity: 0.35;
+  }
+  46% {
+    opacity: 1;
+  }
+  71% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 0.55;
+  }
+  73% {
+    opacity: 1;
+  }
+}
+@keyframes nw-scan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes nw-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 400px -400px;
+  }
+}
+@keyframes nw-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.anim-rise {
+  animation: nw-rise 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+.anim-pop {
+  animation: nw-pop 0.45s cubic-bezier(0.2, 1.1, 0.35, 1) both;
+}
+.anim-pulse {
+  animation: nw-pulse 1.6s ease-in-out infinite;
+}
+.anim-flicker {
+  animation: nw-flicker 5s linear infinite;
+}
+
+/* film grain / vignette laid over everything */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: nw-drift 22s linear infinite;
+}
+
+.vignette::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 45%,
+    transparent 44%,
+    rgba(7, 5, 12, 0.4) 100%
+  );
+}
+
+/* ── the graffiti studio, dressed as a wall ─────────────────────────────── */
+
+/* Hand lettering. The font is already loaded for the menu; using it on the
+   studio's headings is the cheapest, loudest way to say "this is a spray can,
+   not a settings dialog". */
+.marker {
+  font-family: var(--font-marker);
+  letter-spacing: 0.005em;
+}
+
+/* Breeze block, with the street's neon leaking in at the corners. Costs no
+   asset — two repeating gradients for the coursing and two radials for spill. */
+.wall-bg {
+  background-color: #150f1b;
+  background-image:
+    radial-gradient(ellipse at 22% -10%, rgba(255, 47, 134, 0.13), transparent 55%),
+    radial-gradient(ellipse at 88% 108%, rgba(34, 224, 255, 0.1), transparent 52%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.26) 0 2px,
+      rgba(255, 255, 255, 0.012) 2px 3px,
+      transparent 3px 76px
+    ),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.2) 0 2px, transparent 2px 164px);
+}
+
+/* A card stuck to that wall rather than a floating HUD chip. */
+.paper-card {
+  position: relative;
+  background: linear-gradient(158deg, rgba(24, 17, 32, 0.95), rgba(12, 8, 18, 0.92));
+  border: 1px solid rgba(246, 241, 232, 0.09);
+  box-shadow:
+    0 22px 42px -28px rgba(0, 0, 0, 1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* torn masking tape holding it up */
+.tape {
+  position: absolute;
+  width: 58px;
+  height: 16px;
+  background: rgba(231, 222, 198, 0.14);
+  border-left: 1px solid rgba(231, 222, 198, 0.09);
+  border-right: 1px solid rgba(231, 222, 198, 0.09);
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+/* kept inside the card's own width: the rail is a scroll container and clips
+   anything hanging off its left edge */
+.tape-tl {
+  top: -7px;
+  left: 12px;
+  transform: rotate(-4deg);
+}
+.tape-br {
+  bottom: -7px;
+  right: 12px;
+  transform: rotate(3deg);
+}
+
+/* A sprayed bar under a heading, with the paint running off it. The three runs
+   are one pseudo-element plus two box-shadows, offset down so the bar covers
+   different amounts of each and they read as different lengths. */
+.drip {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+.drip::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 5px;
+  width: 100%;
+  height: 3px;
+  background: currentColor;
+  opacity: 0.85;
+}
+.drip::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 15%;
+  width: 3px;
+  height: 10px;
+  background: currentColor;
+  border-radius: 0 0 3px 3px;
+  opacity: 0.7;
+  box-shadow:
+    18px -4px 0 0 currentColor,
+    39px 3px 0 0 currentColor;
+}
+
+/* the can itself: acid, with the paint running off the bottom edge */
+.paint-btn {
+  position: relative;
+}
+.paint-btn::after {
+  content: "";
+  position: absolute;
+  left: 22%;
+  bottom: -9px;
+  width: 4px;
+  height: 12px;
+  background: var(--acid);
+  border-radius: 0 0 4px 4px;
+  box-shadow:
+    34px -5px 0 0 var(--acid),
+    78px 3px 0 0 var(--acid),
+    124px -6px 0 0 var(--acid);
+  pointer-events: none;
+}
+
+/* overspray haze behind a title */
+.overspray {
+  position: relative;
+}
+.overspray::before {
+  content: "";
+  position: absolute;
+  inset: -18px -26px;
+  background: radial-gradient(ellipse at 30% 55%, rgba(200, 255, 50, 0.16), transparent 68%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+/* ── the Unlayer editor, dressed for the game ───────────────────────────── */
+.studio-frame {
+  position: relative;
+  border: 1px solid rgba(246, 241, 232, 0.12);
+  background: #0d0916;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 40px 80px -40px rgba(0, 0, 0, 1);
+}
+.studio-frame > div {
+  height: 100%;
+}
+
+/* The editor's own save/cancel, stood down in favour of the studio's footer.
+   See `useOneCallToAction` — nothing is hidden that the hook has not first
+   recognised by its label. */
+.image-editor-root button[data-nw-duplicate] {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(200, 255, 50, 0.25);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 255, 50, 0.45);
+}
+
+/* A fresh frame of the studio's live street view coming up, like a print
+   developing: a breath of light, then the picture. */
+@keyframes nw-develop {
+  from {
+    opacity: 0.35;
+    filter: brightness(1.6) saturate(0.6);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+  }
+}
+.anim-develop {
+  animation: nw-develop 0.55s ease-out both;
+}
+
+/* the menu's loop: the spray edge crossing the wall, and each step's timer */
+@keyframes nw-sweep {
+  0% {
+    left: 0%;
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+@keyframes nw-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }

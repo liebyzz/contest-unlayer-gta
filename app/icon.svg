@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#07050c"/>
+  <!--
+    A fat-cap stroke with three drips. A letterform closes up into a blob at
+    16px; a bar and three tails still reads as wet paint at any size, and it is
+    the one thing this whole game is about.
+  -->
+  <g fill="#c8ff32">
+    <rect x="5.5" y="8.5" width="21" height="6" rx="2"/>
+    <path d="M8 13.5h3.4v7.6a1.7 1.7 0 0 1-3.4 0z"/>
+    <path d="M14.3 13.5h3.4v11a1.7 1.7 0 0 1-3.4 0z"/>
+    <path d="M20.6 13.5h3.4v5.4a1.7 1.7 0 0 1-3.4 0z"/>
+  </g>
+</svg>
