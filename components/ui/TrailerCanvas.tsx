@@ -18,10 +18,12 @@ export type ShotKind = "call" | "wall" | "covered" | "studio";
  * falls back to the procedurally drawn caller, so the trailer never breaks on
  * a file that isn't there.
  */
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export const PLATES = {
-  doorway: "/imgs/boss-doorway.png",
-  spotlight: "/imgs/boss-spotlight.png",
-  alley: "/imgs/boss-alley.png",
+  doorway: `${BASE}/imgs/boss-doorway.png`,
+  spotlight: `${BASE}/imgs/boss-spotlight.png`,
+  alley: `${BASE}/imgs/boss-alley.png`,
 } as const;
 
 export type PlateName = keyof typeof PLATES;

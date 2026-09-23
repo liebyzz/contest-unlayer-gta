@@ -14,10 +14,15 @@ Built for the *Build with React Image Editor* challenge.
 ![Unlayer](https://img.shields.io/badge/%40unlayer%2Freact--image--editor-the%20spray%20can-c8ff2e)
 ![No backend](https://img.shields.io/badge/backend-none-ff2e88)
 
+### [►&nbsp; PLAY IT IN YOUR BROWSER](https://liebyzz.github.io/contest-unlayer-gta/)
+
+<sub>No install. Desktop, keyboard and mouse.</sub>
+
 <img src="docs/media/neon-walls-loop.webp" alt="Walking up to a wall, pressing E, dropping a tag and spraying in the Unlayer editor, then watching the wall replay every step before a crowd gathers with their phones" width="100%">
 
 <sub>One full loop, unedited gameplay: find a wall → press <kbd>E</kbd> → make it in the Unlayer editor → <b>PAINT THE WALL</b> → the wall replays how you made it → the street notices.</sub>
 
+[Play now](https://liebyzz.github.io/contest-unlayer-gta/) ·
 [Quick start](#quick-start) ·
 [The Graffiti Studio](#the-graffiti-studio) ·
 [How the editor is wired in](#how-the-editor-is-wired-in) ·
@@ -52,6 +57,8 @@ surface in the 3D world and stays there.
 </table>
 
 ## Quick start
+
+**Play it live at <https://liebyzz.github.io/contest-unlayer-gta/>**, or run it locally:
 
 ```bash
 npm install
@@ -504,6 +511,9 @@ sites name `Anton` and `Inter` literally, and `next/font` renames both.
   place if you want to try it.
 - The editor bundle is loaded from Unlayer's CDN. If it can't be reached, the studio degrades
   gracefully: you can still import a picture or pick a ready-made piece and paint the wall.
+- Every push to `main` deploys to GitHub Pages (`.github/workflows/deploy-pages.yml`). The build sets
+  `PAGES_BASE_PATH` to the repo's sub-path, which switches `next.config.ts` to a static export
+  (`output: "export"`) under that path. A plain `npm run build` stays a normal server build.
 - Everything in `docs/media/` is captured from the running game.
 
 ## Originality
